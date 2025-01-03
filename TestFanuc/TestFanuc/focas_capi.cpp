@@ -841,7 +841,7 @@ BOOL WINAPI GetDevicePMCValue(
 	std::string address,
 	char cdata_type,
 	unsigned int count, 
-	byte* buffer)
+	unsigned char* buffer)
 {
 	if (address.length() <= 1)
 		return FALSE;
@@ -891,7 +891,7 @@ BOOL SetDevicePMCValue(
 	std::string address, 
 	char cdata_type, 
 	unsigned int count, 
-	const byte* buffer)
+	const unsigned char* buffer)
 {
 
 	if (address.length() <= 1)
