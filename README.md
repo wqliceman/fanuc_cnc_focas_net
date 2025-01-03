@@ -54,6 +54,7 @@
 本项目使用发那科提供的 FOCAS 协议，理论上支持所有带网口的发那科设备。个别点位读取可能存在差异，详细信息请参阅 **docs** 目录下的相关文档，使用 **IE** 浏览器打开显示效果最佳。
 
 目前协议支持以下平台：
+
 - Win32
 - Win64
 - Linux Ubuntu
@@ -70,6 +71,7 @@
 ```cpp
 #include <iostream>
 #include <string>
+#include <vector>
 #include "fwlib32.h"
 #include "focas_capi.h"
 
@@ -79,19 +81,30 @@ using namespace std;
 
 void HexDump(char* buf, int len, int addr);
 
-int main(int argc, char** argv)
-{
+void print_vector(const std::vector<string>& vec, const std::string& label) {
+    std::cout << label;
+    for (const auto& item : vec)
+        std::cout << item << ", ";
+    std::cout << std::endl;
+}
+
+void print_vector(const std::vector<double>& vec, const std::string& label) {
+    std::cout << label;
+    for (const auto& item : vec)
+        std::cout << item << ", ";
+    std::cout << std::endl;
+}
+
+int main(int argc, char** argv) {
     unsigned short h = 0;
-    string ip = "192.168.20.101";
+    string ip = "192.168.123.131";
     short port = 8193;
 
-    if (argc > 1)
-    {
+    if (argc > 1) {
         ip = argv[1];
     }
 
-    if (EW_OK == get_alloc_handler(ip.c_str(), port, &h))
-    {
+    if (EW_OK == get_alloc_handler(ip.c_str(), port, &h)) {
         std::cout << "============= get_system_info =============" << std::endl;
         system_info system_info;
         memset((void*)&system_info, 0, sizeof(system_info));
@@ -118,31 +131,22 @@ int main(int argc, char** argv)
         std::cout << "main prog:\t" << prog_info.main_prog << std::endl;
         std::cout << "main prog msg:\t" << prog_info.main_prog_msg << std::endl;
         std::cout << "current prog :\t" << prog_info.current_prog << std::endl;
-        std::cout << "current prog msg:\t" << prog_info.current_prog_msg << std::endl;
+        std::cout << "currnet prog msg:\t" << prog_info.current_prog_msg << std::endl;
 
         std::cout << "============= get_spindle_names =============" << std::endl;
         std::vector<string> vc_axis_name;
         get_spindle_names(h, vc_axis_name);
-        std::cout << "spindle axis name: ";
-        for (size_t i = 0; i < vc_axis_name.size(); i++)
-            std::cout << vc_axis_name[i] << ", ";
-        std::cout << std::endl;
+        print_vector(vc_axis_name, "spinle aixs name: ");
 
         std::cout << "============= get_axis_names =============" << std::endl;
         vc_axis_name.clear();
         get_axis_names(h, vc_axis_name);
-        std::cout << "axis name: ";
-        for (size_t i = 0; i < vc_axis_name.size(); i++)
-            std::cout << vc_axis_name[i] << ", ";
-        std::cout << std::endl;
+        print_vector(vc_axis_name, "axis name: ");
 
         std::cout << "============= get_position_info =============" << std::endl;
         std::vector<double> vc_pos;
         get_position_info(h, pos_mach, vc_pos);
-        std::cout << "axis mach pos: ";
-        for (size_t i = 0; i < vc_pos.size(); i++)
-            std::cout << vc_pos[i] << ", ";
-        std::cout << std::endl;
+        print_vector(vc_pos, "axis mach pos: ");
 
         std::cout << "============= get_part_counts =============" << std::endl;
         unsigned int cur_count, total_count, req_count;
@@ -157,13 +161,13 @@ int main(int argc, char** argv)
         get_feed_info(h, &act_speed, &set_speed, &override);
         std::cout << "act speed:" << act_speed << std::endl;
         std::cout << "set speed:" << set_speed << std::endl;
-        std::cout << "override speed:" << override << std::endl;
+        std::cout << "overide speed:" << override << std::endl;
 
         std::cout << "============= get_spindle_info =============" << std::endl;
         get_spindle_info(h, &act_speed, &set_speed, &override);
         std::cout << "act speed:" << act_speed << std::endl;
         std::cout << "set speed:" << set_speed << std::endl;
-        std::cout << "override speed:" << override << std::endl;
+        std::cout << "overide speed:" << override << std::endl;
 
         std::cout << "============= get_tool_info =============" << std::endl;
         short tool_num;
@@ -173,34 +177,22 @@ int main(int argc, char** argv)
         std::cout << "============= get_servo_axis_load =============" << std::endl;
         std::vector<double> vc_loads;
         get_servo_axis_load(h, vc_loads);
-        std::cout << "servo axis load:";
-        for (size_t i = 0; i < vc_loads.size(); i++)
-            std::cout << vc_loads[i] << ", ";
-        std::cout << std::endl;
+        print_vector(vc_loads, "servo axis load:");
 
         std::cout << "============= get_spindle_axis_load =============" << std::endl;
         vc_loads.clear();
         get_spindle_axis_load(h, vc_loads);
-        std::cout << "spindle axis load:";
-        for (size_t i = 0; i < vc_loads.size(); i++)
-            std::cout << vc_loads[i] << ", ";
-        std::cout << std::endl;
+        print_vector(vc_loads, "spindle axis load:");
 
         std::cout << "============= get_servo_temperature =============" << std::endl;
         std::vector<double> vc_temp;
         get_servo_temperature(h, vc_temp);
-        std::cout << "servo axis temperature:";
-        for (size_t i = 0; i < vc_temp.size(); i++)
-            std::cout << vc_temp[i] << ", ";
-        std::cout << std::endl;
+        print_vector(vc_temp, "servo axis temperature:");
 
         std::cout << "============= get_spindle_temperature =============" << std::endl;
         vc_temp.clear();
         get_spindle_temperature(h, vc_temp);
-        std::cout << "spindle axis temperature:";
-        for (size_t i = 0; i < vc_temp.size(); i++)
-            std::cout << vc_temp[i] << ", ";
-        std::cout << std::endl;
+        print_vector(vc_temp, "spindle axis temperature:");
 
         std::cout << "============= get_time_info =============" << std::endl;
         long cycle, total_cutting, operate, total_power_on;
@@ -213,8 +205,7 @@ int main(int argc, char** argv)
         std::cout << "============= get_alarm_msg =============" << std::endl;
         std::vector<alarm_message> vc_alarms;
         get_alarm_msg(h, vc_alarms);
-        for (size_t i = 0; i < vc_alarms.size(); i++)
-        {
+        for (size_t i = 0; i < vc_alarms.size(); i++) {
             std::cout << "alarm" << i + 1 << std::endl;
             std::cout << "no: " << vc_alarms[i].alarm_no <<
                 ", type: " << vc_alarms[i].type <<
@@ -232,7 +223,9 @@ int main(int argc, char** argv)
 ```
 
 ## 5. 贡献
+
 欢迎提交问题和贡献代码！请确保在提交 PR 之前阅读并遵循我们的贡献指南。
 
 ## 6. 许可证
+
 本项目基于 MIT 许可证开源，详细信息请参阅 LICENSE 文件。
