@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include "fwlib32.h"
 #include "focas_capi.h"
 
@@ -9,12 +10,24 @@ using namespace std;
 
 void HexDump(char* buf, int len, int addr);
 
+void print_vector(const std::vector<string>& vec, const std::string& label) {
+	std::cout << label;
+	for (const auto& item : vec)
+		std::cout << item << ", ";
+	std::cout << std::endl;
+}
+
+void print_vector(const std::vector<double>& vec, const std::string& label) {
+	std::cout << label;
+	for (const auto& item : vec)
+		std::cout << item << ", ";
+	std::cout << std::endl;
+}
+
 int main(int argc, char** argv)
 {
 	unsigned short h = 0;
-	//string ip = "180.169.31.34";
-	//short port = 18193;
-	string ip = "192.168.20.101";
+	string ip = "192.168.123.131";
 	short port = 8193;
 
 	if (argc > 1)
@@ -34,7 +47,7 @@ int main(int argc, char** argv)
 		std::cout << "version:\t" << system_info.version << std::endl;
 
 		std::cout << "============= get_status_info =============" << std::endl;
-		status_info st_info ;
+		status_info st_info;
 		memset((void*)&st_info, 0, sizeof(st_info));
 		get_status_info(h, st_info);
 		std::cout << "status:\t" << st_info.status << std::endl;
@@ -55,26 +68,17 @@ int main(int argc, char** argv)
 		std::cout << "============= get_spindle_names =============" << std::endl;
 		std::vector<string> vc_axis_name;
 		get_spindle_names(h, vc_axis_name);
-		std::cout << "spinle aixs name: ";
-		for (size_t i = 0; i < vc_axis_name.size(); i++)
-			std::cout << vc_axis_name[i] << ", ";
-		std::cout << std::endl;
+		print_vector(vc_axis_name, "spinle aixs name: ");
 
 		std::cout << "============= get_axis_names =============" << std::endl;
 		vc_axis_name.clear();
 		get_axis_names(h, vc_axis_name);
-		std::cout << "axis name: ";
-		for (size_t i = 0; i < vc_axis_name.size(); i++)
-			std::cout << vc_axis_name[i] << ", ";
-		std::cout << std::endl;
+		print_vector(vc_axis_name, "axis name: ");
 
 		std::cout << "============= get_position_info =============" << std::endl;
 		std::vector<double> vc_pos;
 		get_position_info(h, pos_mach, vc_pos);
-		std::cout << "axis mach pos: ";
-		for (size_t i = 0; i < vc_pos.size(); i++)
-			std::cout << vc_pos[i] << ", ";
-		std::cout << std::endl;
+		print_vector(vc_pos, "axis mach pos: ");
 
 		std::cout << "============= get_part_counts =============" << std::endl;
 		unsigned int cur_count, total_count, req_count;
@@ -105,34 +109,22 @@ int main(int argc, char** argv)
 		std::cout << "============= get_servo_axis_load =============" << std::endl;
 		std::vector<double> vc_loads;
 		get_servo_axis_load(h, vc_loads);
-		std::cout << "servo axis load:";
-		for (size_t i = 0; i < vc_loads.size(); i++)
-			std::cout << vc_loads[i] << ", ";
-		std::cout << std::endl;
+		print_vector(vc_loads, "servo axis load:");
 
 		std::cout << "============= get_spindle_axis_load =============" << std::endl;
 		vc_loads.clear();
 		get_spindle_axis_load(h, vc_loads);
-		std::cout << "spindle axis load:";
-		for (size_t i = 0; i < vc_loads.size(); i++)
-			std::cout << vc_loads[i] << ", ";
-		std::cout << std::endl;
+		print_vector(vc_loads, "spindle axis load:");
 
 		std::cout << "============= get_servo_temperature =============" << std::endl;
 		std::vector<double> vc_temp;
 		get_servo_temperature(h, vc_temp);
-		std::cout << "servo axis temperature:";
-		for (size_t i = 0; i < vc_temp.size(); i++)
-			std::cout << vc_temp[i] << ", ";
-		std::cout << std::endl;
+		print_vector(vc_temp, "servo axis temperature:");
 
 		std::cout << "============= get_spindle_temperature =============" << std::endl;
 		vc_temp.clear();
 		get_spindle_temperature(h, vc_temp);
-		std::cout << "spindle axis temperature:";
-		for (size_t i = 0; i < vc_temp.size(); i++)
-			std::cout << vc_temp[i] << ", ";
-		std::cout << std::endl;
+		print_vector(vc_temp, "spindle axis temperature:");
 
 		std::cout << "============= get_time_info =============" << std::endl;
 		long cycle, total_cutting, operate, total_power_on;
